@@ -18,7 +18,7 @@ String: Name des Schadstoffs, für den die entsprechendne Luftschadstoffprognose
 
 **datastream**
 
-ID des Datastreams eines Array von Arrays, wobei jedes Unterarray aus einem Datums- und einem numerischen Wert (der jeweiligen Prognose des Luftschadstoffwertes zum entsprechenden Zeitpunkt) besteht. Z.B.: 
+ID des Datastreams, eines Array von Arrays, wobei jedes Unterarray aus einem Datums- und einem numerischen Wert (der jeweiligen Prognose des Luftschadstoffwertes zum entsprechenden Zeitpunkt) besteht. Z.B.: 
 ```
 [ [ "2023-02-17T05:00:00", 15.1 ], 
 [ "2023-02-17T06:00:00", 20.3 ], 
