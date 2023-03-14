@@ -1,0 +1,13 @@
+{
+    "modules": {
+        "tools": {
+            "gfi": {
+                "themes":{
+                    "airpollution": {
+                        "diagram": "Diagrams"
+                    }
+                }
+            }
+        }
+    }
+}
