@@ -5,7 +5,7 @@ Entwicklung Masterportal Addon Airpollution (gfiTheme)
 
 Das Plugin dient zur Darstellung von Luftschadstoff-Prognosen.
 
-Getestet mit Masterportal Version 2.30.0
+Getestet mit Masterportal Version 2.42.0
 
 
 ## Airpollution Parameter
