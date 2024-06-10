@@ -77,17 +77,53 @@ export default {
         },
 
         /**
+         * Formats a timestamp to the format YYYY-MM-DDTHH:00:00Z
+         * (i.e. sets the minutes and the seconds to 0)
+         * @param {string} timestamp - The timestamp
+         * @returns {string} The formatted timestamp.
+         */
+        formatTimestamp (timestamp) {
+            const date = new Date(timestamp);
+
+            date.setMinutes(0);
+            date.setSeconds(0);
+
+            return date.toISOString().slice(0, 16) + "00:00Z";
+        },
+
+        /**
+         * Checks if the provided timestamp is the same as the current formatted time.
+         * @param {string} timestamp - The timestamp to be compared.
+         * @returns {boolean} True if the timestamp is the same as the formatted current time, false otherwise
+         */
+        isCurrentTime (timestamp) {
+            const currentFormattedTime = this.formatTimestamp(new Date().toISOString());
+
+            return currentFormattedTime === this.formatTimestamp(timestamp);
+        },
+
+        /**
          * Creates the data for the chart.
          * @returns {Object} The chart data.
          */
         createChartData: function () {
+
             return {
                 labels: this.dataset.map(item => this.formatDate(item[0])),
                 datasets: [
                     {
                         data: this.dataset.map(item => item[1]),
                         backgroundColor: this.createBackgroudColors(),
-                        borderColor: "rgb(255, 0, 0)"
+                        borderColor: this.dataset.map(item => this.isCurrentTime(item[0]) ? "black" : "transparent"),
+                        borderWidth: {
+                            top: 1.5,
+                            right: 1.5,
+                            bottom: 0,
+                            left: 1.5
+                        },
+                        categoryPercentage: 1.0,
+                        barPercentage: 0.83
+                        // barThickness: this.dataset.map(item => this.isCurrentTime(item[0]) ? 9 : "flex")
                     }
                 ]
             };
@@ -95,16 +131,22 @@ export default {
 
 
         /**
-        * @param {String} dateString a Zulu time date string (without a Z for Zulu time).
-        * @returns {String} The date and time for Germany: 'DD.MM., hh' and a trailing 'h'
+        * @param {String} dateString a Zulu time date string.
+        * @returns {String} The date and time for Germany: 'ddd, DD.MM., hh' and a trailing 'h'
         */
         formatDate: function (dateString) {
-            // add a 'Z' to indicate that Zulu time is processed!
-            const date = new Date(dateString + "Z"),
-                options = {day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Berlin"};
+            const date = new Date(dateString),
+                options = {weekday: "short", day: "2-digit", month: "2-digit", hour: "numeric", minute: "2-digit", timeZone: "Europe/Berlin"};
 
-            // remove trailing ':00' and add 'h'
-            return date.toLocaleDateString("de-DE", options).replace(/:00$/, "") + "h ";
+            let formattedDate = date.toLocaleDateString("de-DE", options).replace(/:00$/, "");
+
+            // remove the leading zero when time < 10:00
+            if (date.getHours() < 10) {
+                formattedDate = formattedDate.replace(/\b0(\d)\b/, "$1");
+            }
+            // Remove the commay
+            formattedDate = formattedDate.replace(/,/g, "");
+            return formattedDate + "h";
         },
 
 
@@ -179,7 +221,7 @@ export default {
                     },
                     ticks: {
                         maxTicksLimit: 16,
-                        fontSize: 9
+                        fontSize: 11
                     },
                     gridLines: this.createGridLines()
                 }],
@@ -191,7 +233,7 @@ export default {
                     ticks: {
                         beginAtZero: true,
                         precision: 0,
-                        fontSize: 9,
+                        fontSize: 11,
                         callback: value => thousandsSeparator(value)
                     },
                     gridLines: this.createGridLines()

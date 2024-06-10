@@ -23,6 +23,24 @@ export default {
          */
         gfiParams: function () {
             return this.feature.getTheme()?.params;
+        },
+        title: function () {
+            const titleField = this.gfiParams.titleField,
+                detailField = this.gfiParams.detailField,
+                detailLabel = this.gfiParams.detailLabel;
+            let title = "";
+
+            if (titleField && this.feature.getMappedProperties()[titleField]) {
+                title = this.feature.getMappedProperties()[titleField];
+            }
+            if (detailField && this.feature.getMappedProperties()[detailField]) {
+                title += " (";
+                if (detailLabel) {
+                    title += detailLabel + ": ";
+                }
+                title += this.feature.getMappedProperties()[detailField] + ")";
+            }
+            return title;
         }
     },
     watch: {
@@ -93,8 +111,7 @@ export default {
     <div class="airpollution">
         <div class="card header">
             <strong>
-                {{ feature.getMappedProperties().station_name
-                    + ' (Station ' + feature.getMappedProperties().station_id + ')' }}
+                {{ title }}
             </strong>
             <br>
             <small>zuletzt aktualisiert:{{ formatFullDate(feature.getMappedProperties().update_time) }}</small>
