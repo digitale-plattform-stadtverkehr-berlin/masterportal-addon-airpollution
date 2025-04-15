@@ -1,6 +1,6 @@
 <script>
-import Chart from "chart.js";
-import thousandsSeparator from "../../../../src/utils/thousandsSeparator.js";
+import Chart from "chart.js/auto";
+import thousandsSeparator from "../../../../src/shared/js/utils/thousandsSeparator.js";
 
 export default {
     name: "AirpollutionBarChart",
@@ -65,10 +65,12 @@ export default {
                 data: this.createChartData(),
                 options: {
                     responsive: true,
-                    legend: {
-                        display: false
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: this.createChartTooltip()
                     },
-                    tooltips: this.createChartTooltip(),
                     scales: this.createChartScales(),
                     defaultFontFamily: this.defaultFontFamily,
                     defaultFontColor: this.defaultFontColor
@@ -115,15 +117,15 @@ export default {
                         data: this.dataset.map(item => item[1]),
                         backgroundColor: this.createBackgroudColors(),
                         borderColor: this.dataset.map(item => this.isCurrentTime(item[0]) ? "black" : "transparent"),
-                        borderWidth: {
-                            top: 1.5,
-                            right: 1.5,
+                        borderWidth: this.dataset.map(item => ({
+                            top: this.isCurrentTime(item[0]) ? 1.5 : 0.2,
+                            right: this.isCurrentTime(item[0]) ? 1.5 : 0.2,
                             bottom: 0,
-                            left: 1.5
-                        },
+                            left: this.isCurrentTime(item[0]) ? 1.5 : 0.2
+                        })),
                         categoryPercentage: 1.0,
-                        barPercentage: 0.83
-                        // barThickness: this.dataset.map(item => this.isCurrentTime(item[0]) ? 9 : "flex")
+                        barPercentage: 0.83,
+                        barThickness: this.dataset.map(item => this.isCurrentTime(item[0]) ? 9 : "flex")
                     }
                 ]
             };
@@ -172,22 +174,16 @@ export default {
          */
         createChartTooltip: function () {
             return {
-                bodyFontColor: this.toolTipBodyFontColor,
+                bodyColor: this.toolTipBodyFontColor,
                 backgroundColor: this.toolTipBackgroundColor,
-                titleFontColor: this.toolTipTitleColor,
+                titleColor: this.toolTipTitleColor,
                 titleAlign: "center",
                 bodyAlign: "center",
-                custom: (tooltip) => {
-                    if (!tooltip) {
-                        return;
-                    }
-                    // disable displaying the color box;
-                    tooltip.displayColors = false;
-                },
+                displayColors: false,
                 callbacks: {
                     title: (tooltipItem) => tooltipItem[0].xLabel,
-                    afterLabel: (tooltipItem) => this.getAirQualityRating(tooltipItem.value),
-                    label: (tooltipItem) => thousandsSeparator(tooltipItem.value) + " " + this.uom
+                    afterLabel: (tooltipItem) => this.getAirQualityRating(tooltipItem.raw),
+                    label: (tooltipItem) => thousandsSeparator(tooltipItem.raw) + " " + this.uom
                 }
             };
         },
@@ -214,21 +210,21 @@ export default {
          */
         createChartScales: function () {
             return {
-                xAxes: [{
-                    scaleLabel: {
+                x: {
+                    title: {
                         display: true,
-                        labelString: "Zeit" // hard coded!
+                        text: "Zeit" // hard coded!
                     },
                     ticks: {
                         maxTicksLimit: 16,
                         fontSize: 11
                     },
-                    gridLines: this.createGridLines()
-                }],
-                yAxes: [{
-                    scaleLabel: {
+                    grid: this.createGridLines()
+                },
+                y: {
+                    title: {
                         display: true,
-                        labelString: this.uom
+                        text: this.uom
                     },
                     ticks: {
                         beginAtZero: true,
@@ -236,8 +232,8 @@ export default {
                         fontSize: 11,
                         callback: value => thousandsSeparator(value)
                     },
-                    gridLines: this.createGridLines()
-                }]
+                    grid: this.createGridLines()
+                }
             };
         },
 
@@ -261,7 +257,7 @@ export default {
 <template>
     <div
         v-if="dataset"
-        id="airpollutio-bar-chart"
+        id="airpollution-bar-chart"
     >
         <div id="airpollution-chart-container">
             <canvas />
@@ -272,32 +268,19 @@ export default {
 <style lang="scss">
 @import "~variables";
 
-
-#airpollution-bar-chart {
-    margin: 6px;
-
-    button {
-        color: $secondary_contrast;
-        border: 1px solid #adadad;
-    }
-
-    .btn-group {
-        padding: 8px;
-    }
-
-    #airpollution-chart-container {
-        width: 100%;
-        height: 100%;
-
-        // @media (min-width: 768px) {
-        //     width: 80%;
-        //     height: 80%;
-        // }
-
-        // @media (min-width: 1024px) {
-        //     width: 70%;
-        //     height: 70%;
-        // }
+#mp-menu-secondaryMenu .airpollution {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    .chart-content {
+        flex-grow: 0;
+        flex-shrink: 1;
+        #airpollution-bar-chart canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
     }
 }
 </style>

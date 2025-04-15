@@ -6,7 +6,6 @@ import AirpollutionBarChart from "./AirpollutionBarChart.vue";
 export default {
     name: "Airpollution",
     components: {
-        // AirpollutionLineChart,
         AirpollutionBarChart
     },
     props: {
@@ -16,7 +15,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters("Language", ["currentLocale"]),
+        ...mapGetters("Modules/Language", ["currentLocale"]),
         /**
          * Get the configured gfiParams.
          * @returns {Object} The gfiParams.
@@ -83,15 +82,6 @@ export default {
                 document.getElementsByClassName("gfi-content")[0].style.maxWidth = "880px";
             }
         },
-        /**
-         * Reacts on click on download button. Opens the downloadLink.
-         * @param {Object} evt the dedicated event
-         * @returns {void}
-         */
-        // onClick (evt) {
-        //     evt.stopPropagation();
-        //     window.open(this.downloadLink);
-        // },
 
         /**
         * @param {String} dateString a Zulu time date string.
@@ -128,7 +118,6 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-@import "~/css/mixins.scss";
 
 .airpollution {
     overflow-x: auto;
@@ -166,7 +155,7 @@ export default {
     .nav-pills {
         padding: 6px;
 
-        @include active-pill(0.9375em, 1em);
+        //@include active-pill(0.9375em, 1em);
     }
 
     .chart-content {
@@ -174,13 +163,6 @@ export default {
         padding: 0 5px 5px 5px;
     }
 
-    .downloadButton {
-        padding: 6px;
-
-        button {
-            outline: none;
-        }
-    }
 
     .bootstrap-icon {
         padding-right: 5px;
